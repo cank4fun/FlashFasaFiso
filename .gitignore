@@ -1,0 +1,15 @@
+/build/
+/out/
+/runtime/
+/data/
+/games/*
+!/games/.gitkeep
+/.vs/
+__pycache__/
+*.exe
+*.pdb
+*.zip
+*.swf
+*.sol
+*.log
+.env*
