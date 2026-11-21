@@ -7,6 +7,7 @@
 #include <commctrl.h>
 #include <dwmapi.h>
 #include <shellapi.h>
+#include <wincodec.h>
 #include <windowsx.h>
 #include <array>
 #include <bit>
@@ -250,6 +251,7 @@ private:
     bool create();
     void resize();
     void paint();
+    void load_title_icon();
     void chrome();
     void navigation();
     void library();
@@ -314,6 +316,7 @@ private:
     std::array<RECT, 3> pathRects_{};
     bool pathTooltipsActive_ = false;
     Canvas canvas_;
+    ComPtr<ID2D1Bitmap> titleIcon_;
     Layout layout_;
     std::unique_ptr<Worker> worker_;
     State state_;
@@ -359,11 +362,29 @@ void Window::button(Action action, Rect rect, std::wstring_view label, bool prim
                  Font::strong, primary ? 0x112623 : white, true);
 }
 
+void Window::load_title_icon() {
+    const auto icon = static_cast<HICON>(LoadImageW(instance_, MAKEINTRESOURCEW(IDI_APP), IMAGE_ICON,
+                                                    48, 48, LR_SHARED));
+    ComPtr<IWICImagingFactory> factory;
+    ComPtr<IWICBitmap> bitmap;
+    ComPtr<IWICFormatConverter> converter;
+    if (!icon ||
+        FAILED(CoCreateInstance(CLSID_WICImagingFactory, nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&factory))) ||
+        FAILED(factory->CreateBitmapFromHICON(icon, &bitmap)) || FAILED(factory->CreateFormatConverter(&converter)) ||
+        FAILED(converter->Initialize(bitmap.Get(), GUID_WICPixelFormat32bppPBGRA,
+                                     WICBitmapDitherTypeNone, nullptr, 0, WICBitmapPaletteTypeCustom))) return;
+    canvas_.target()->CreateBitmapFromWicBitmap(converter.Get(), &titleIcon_);
+}
+
 void Window::chrome() {
     canvas_.fill(box(0, 0, layout_.width, titleHeight), titleBar);
     canvas_.line(0, titleHeight, layout_.width, titleHeight, 0x592f42);
-    canvas_.fill(box(13, 10, 33, 24), 0x593445, 6);
-    canvas_.text(L"FFF", box(13, 10, 33, 24), Font::strong, 0xf8e8ef, true);
+    if (titleIcon_) {
+        canvas_.target()->DrawBitmap(titleIcon_.Get(), box(17, 10, 24, 24));
+    } else {
+        canvas_.fill(box(13, 10, 33, 24), 0x593445, 6);
+        canvas_.text(L"FFF", box(13, 10, 33, 24), Font::strong, 0xf8e8ef, true);
+    }
     canvas_.text(L"FlashFasaFiso", box(56, 0, 205, titleHeight), Font::title, white);
     constexpr Action actions[]{Action::minimize, Action::maximize, Action::close};
     for (unsigned i = 0; i < layout_.caption.size(); ++i) {
@@ -651,6 +672,7 @@ void Window::paint() {
     }
     bool painted = false;
     if (canvas_.begin(window_, dpi_)) {
+        if (newTarget) load_title_icon();
         controls_.clear();
         controlClip_.reset();
         canvas_.target()->Clear(D2D1::ColorF(base));
@@ -686,6 +708,7 @@ void Window::paint() {
 
 void Window::release_target() {
     covers_.clear();
+    titleIcon_.Reset();
     canvas_.release();
     ++generation_;
     request_covers();
@@ -1619,7 +1642,9 @@ int Window::run(int show) {
     wc.style = CS_DBLCLKS;
     wc.lpfnWndProc = procedure;
     wc.hInstance = instance_;
-    wc.hIcon = LoadIconW(nullptr, IDI_APPLICATION);
+    wc.hIcon = LoadIconW(instance_, MAKEINTRESOURCEW(IDI_APP));
+    wc.hIconSm = static_cast<HICON>(LoadImageW(instance_, MAKEINTRESOURCEW(IDI_APP), IMAGE_ICON,
+                                              GetSystemMetrics(SM_CXSMICON), GetSystemMetrics(SM_CYSMICON), LR_SHARED));
     wc.hCursor = LoadCursorW(nullptr, IDC_ARROW);
     wc.lpszClassName = windowClass;
     if (!RegisterClassExW(&wc)) throw std::runtime_error("RegisterClassExW failed");

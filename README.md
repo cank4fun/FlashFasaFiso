@@ -6,7 +6,7 @@ FlashFasaFiso is a portable launcher for local Flash games. Search your library,
 
 ## Getting started
 
-Download `FlashFasaFiso-v1.0.0-win64.zip` from [GitHub Releases](https://github.com/cank4fun/FlashFasaFiso/releases/latest). On **Windows 11 x64**, extract the archive and run `FlashFasaFiso.exe`. Ruffle Desktop 0.8.0 is included. The launcher creates `games/` and `data/` as needed in a writable folder.
+Download the latest Windows x64 portable ZIP from [GitHub Releases](https://github.com/cank4fun/FlashFasaFiso/releases/latest). On **Windows 11 x64**, extract the archive and run `FlashFasaFiso.exe`. Ruffle Desktop 0.8.0 is included. The launcher creates `games/` and `data/` as needed in a writable folder.
 
 Game files are not included. Add SWF files you have permission to use, with one folder per game under `games/`. Keep each game's assets in place and press **F5** or click **Rescan**.
 

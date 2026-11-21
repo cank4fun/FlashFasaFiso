@@ -6,7 +6,7 @@ FlashFasaFiso, yerelde sakladığınız Flash oyunları için taşınabilir bir 
 
 ## İlk kullanım
 
-`FlashFasaFiso-v1.0.0-win64.zip` dosyasını [GitHub Releases sayfasından](https://github.com/cank4fun/FlashFasaFiso/releases/latest) indirin. **Windows 11 x64** üzerinde arşivi çıkarıp `FlashFasaFiso.exe` dosyasını açın. Pakette Ruffle Desktop 0.8.0 bulunur. Başlatıcı, yazılabilir bir klasörde gerektiğinde `games/` ve `data/` dizinlerini oluşturur.
+En güncel Windows x64 taşınabilir ZIP paketini [GitHub Releases sayfasından](https://github.com/cank4fun/FlashFasaFiso/releases/latest) indirin. **Windows 11 x64** üzerinde arşivi çıkarıp `FlashFasaFiso.exe` dosyasını açın. Pakette Ruffle Desktop 0.8.0 bulunur. Başlatıcı, yazılabilir bir klasörde gerektiğinde `games/` ve `data/` dizinlerini oluşturur.
 
 Paket oyun dosyası içermez. Kullanım hakkınız olan SWF dosyalarını her oyun için ayrı bir klasör açarak `games/` altına ekleyin. Yan dosyaları yerinde bırakın ve **F5** tuşuna basın ya da **Yeniden Tara** düğmesine tıklayın.
 
